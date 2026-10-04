@@ -99,8 +99,19 @@
                     @forelse($recentMovements as $movement)
                     <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/40 transition">
                         <td class="px-6 py-4 font-semibold text-[#1F2937] dark:text-[#F8FAFC]">
-                            {{ $movement->product?->name ?? 'Deleted Product' }}
-                            <span class="block text-xs text-[#64748B] dark:text-[#CBD5E1] font-mono mt-0.5">SKU: {{ $movement->product?->sku ?? 'N/A' }}</span>
+                            <div class="flex items-center space-x-3">
+                                @if($movement->product?->image_url)
+                                    <img src="{{ $movement->product->image_url }}" alt="{{ $movement->product->name }}" class="w-10 h-10 rounded-lg object-cover border border-[#E2E8F0] dark:border-slate-700 shrink-0">
+                                @else
+                                    <div class="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 shrink-0">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                    </div>
+                                @endif
+                                <div>
+                                    <span class="block font-semibold text-[#1F2937] dark:text-[#F8FAFC]">{{ $movement->product?->name ?? 'Deleted Product' }}</span>
+                                    <span class="block text-xs text-[#64748B] dark:text-[#CBD5E1] font-mono mt-0.5">SKU: {{ $movement->product?->sku ?? 'N/A' }}</span>
+                                </div>
+                            </div>
                         </td>
                         <td class="px-6 py-4">
                             @if($movement->type === 'in')

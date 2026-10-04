@@ -21,6 +21,7 @@
         <table class="w-full text-left text-sm text-gray-600 dark:text-gray-300">
             <thead class="bg-amber-50/50 dark:bg-amber-950/20 text-xs font-bold text-amber-800 dark:text-amber-300 uppercase">
                 <tr>
+                    <th class="px-6 py-3">Image</th>
                     <th class="px-6 py-3">SKU</th>
                     <th class="px-6 py-3">Product Name</th>
                     <th class="px-6 py-3">Category</th>
@@ -32,6 +33,15 @@
             <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
                 @forelse($products as $product)
                     <tr class="hover:bg-amber-50/30 dark:hover:bg-amber-900/10">
+                        <td class="px-6 py-4">
+                            @if($product->image_url)
+                                <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="w-10 h-10 rounded-lg object-cover border border-amber-200 dark:border-amber-700 shadow-sm">
+                            @else
+                                <div class="w-10 h-10 rounded-lg bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center text-amber-600 dark:text-amber-400">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                </div>
+                            @endif
+                        </td>
                         <td class="px-6 py-4 font-mono font-bold text-gray-900 dark:text-white">{{ $product->sku }}</td>
                         <td class="px-6 py-4 font-semibold text-gray-900 dark:text-white">{{ $product->name }}</td>
                         <td class="px-6 py-4 text-xs">{{ $product->category?->name ?? 'Uncategorized' }}</td>
@@ -47,7 +57,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="px-6 py-8 text-center text-gray-400">
+                        <td colspan="7" class="px-6 py-8 text-center text-gray-400">
                             No low-stock alerts right now! All product inventory levels are healthy.
                         </td>
                     </tr>
