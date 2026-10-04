@@ -70,13 +70,16 @@ class ProductApiController extends Controller
 
         if ($request->hasFile('image')) {
             $file = $request->file('image');
-            $imageData = base64_encode(file_get_contents($file->getRealPath()));
-            $imageMime = $file->getMimeType();
 
             $cloudResult = $cloudinaryService->upload($file, 'products');
             if ($cloudResult) {
                 $cloudinaryUrl = $cloudResult['secure_url'];
                 $cloudinaryPublicId = $cloudResult['public_id'];
+                $imageData = null;
+                $imageMime = null;
+            } else {
+                $imageData = base64_encode(file_get_contents($file->getRealPath()));
+                $imageMime = $file->getMimeType();
             }
         }
 
@@ -132,13 +135,17 @@ class ProductApiController extends Controller
                 $cloudinaryService->destroy($product->cloudinary_public_id);
             }
 
-            $updateData['image_data'] = base64_encode(file_get_contents($file->getRealPath()));
-            $updateData['image_mime'] = $file->getMimeType();
-
             $cloudResult = $cloudinaryService->upload($file, 'products');
             if ($cloudResult) {
                 $updateData['cloudinary_url'] = $cloudResult['secure_url'];
                 $updateData['cloudinary_public_id'] = $cloudResult['public_id'];
+                $updateData['image_data'] = null;
+                $updateData['image_mime'] = null;
+            } else {
+                $updateData['image_data'] = base64_encode(file_get_contents($file->getRealPath()));
+                $updateData['image_mime'] = $file->getMimeType();
+                $updateData['cloudinary_url'] = null;
+                $updateData['cloudinary_public_id'] = null;
             }
         }
 

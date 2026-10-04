@@ -141,14 +141,17 @@ class ProductsList extends Component
         $cloudinaryPublicId = null;
 
         if ($this->image) {
-            $imageData = base64_encode(file_get_contents($this->image->getRealPath()));
-            $imageMime = $this->image->getMimeType();
-
-            // Try Cloudinary API upload
+            // Try Cloudinary API upload first
             $cloudResult = $cloudinaryService->upload($this->image, 'products');
             if ($cloudResult) {
                 $cloudinaryUrl = $cloudResult['secure_url'];
                 $cloudinaryPublicId = $cloudResult['public_id'];
+                $imageData = null;
+                $imageMime = null;
+            } else {
+                // Fallback to local DB BLOB storage if Cloudinary fails
+                $imageData = base64_encode(file_get_contents($this->image->getRealPath()));
+                $imageMime = $this->image->getMimeType();
             }
         }
 
@@ -169,7 +172,7 @@ class ProductsList extends Component
                 'low_stock_threshold' => $validated['low_stock_threshold'],
             ];
 
-            if ($imageData && $imageMime) {
+            if ($this->image) {
                 $updateData['image_data'] = $imageData;
                 $updateData['image_mime'] = $imageMime;
                 $updateData['cloudinary_url'] = $cloudinaryUrl;
