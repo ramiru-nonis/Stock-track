@@ -7,10 +7,12 @@ use App\Models\Product;
 use App\Models\StockMovement;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Cache;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 class Dashboard extends Component
 {
+    #[Layout('layouts.app')]
     public function render(): View
     {
         $stats = Cache::remember('dashboard_stats', 300, function () {
@@ -19,6 +21,7 @@ class Dashboard extends Component
                 'low_stock_count' => Product::lowStock()->count(),
                 'total_categories' => Category::count(),
                 'recent_movements_count' => StockMovement::where('created_at', '>=', now()->subDays(7))->count(),
+                'total_inventory_value' => Product::selectRaw('SUM(selling_price * quantity) as total')->value('total') ?? 0,
             ];
         });
 
@@ -30,6 +33,7 @@ class Dashboard extends Component
         return view('livewire.dashboard', [
             'stats' => $stats,
             'recentMovements' => $recentMovements,
-        ])->layout('layouts.app');
+        ]);
     }
 }
+

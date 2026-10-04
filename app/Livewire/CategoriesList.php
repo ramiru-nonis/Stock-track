@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Models\Category;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -111,6 +112,7 @@ class CategoriesList extends Component
         $this->deletingCategoryId = null;
     }
 
+    #[Layout('layouts.app')]
     public function render(): View
     {
         $query = Category::withCount('products')->orderBy('name');
@@ -121,6 +123,6 @@ class CategoriesList extends Component
 
         return view('livewire.categories-list', [
             'categories' => $query->paginate(10),
-        ])->layout('layouts.app');
+        ]);
     }
 }

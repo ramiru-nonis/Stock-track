@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\Product;
 use Illuminate\Contracts\View\View;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -18,6 +19,7 @@ class LowStockAlerts extends Component
         $this->resetPage();
     }
 
+    #[Layout('layouts.app')]
     public function render(): View
     {
         $query = Product::with('category')->lowStock();
@@ -28,6 +30,7 @@ class LowStockAlerts extends Component
 
         return view('livewire.low-stock-alerts', [
             'products' => $query->paginate(10),
-        ])->layout('layouts.app');
+        ]);
     }
 }
+
