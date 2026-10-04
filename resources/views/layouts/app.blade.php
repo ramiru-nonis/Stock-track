@@ -16,6 +16,25 @@
 
         <!-- Styles -->
         @livewireStyles
+
+        <!-- Dark/Light Theme Script (Prevents FOUC & handles global toggle) -->
+        <script>
+            (function() {
+                const isDark = localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
+                if (isDark) {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            })();
+
+            window.toggleDarkMode = function() {
+                const isDark = document.documentElement.classList.toggle('dark');
+                localStorage.setItem('color-theme', isDark ? 'dark' : 'light');
+                window.dispatchEvent(new CustomEvent('theme-changed', { detail: isDark }));
+                return isDark;
+            };
+        </script>
     </head>
     <body class="font-sans antialiased">
         <x-banner />

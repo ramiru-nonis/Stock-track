@@ -43,9 +43,28 @@
                 </div>
             </div>
 
-            <div class="hidden sm:flex sm:items-center sm:ms-6">
+            <div class="hidden sm:flex sm:items-center sm:ms-6 space-x-3">
+                <!-- Dark/Light Mode Theme Toggle -->
+                <div x-data="{
+                    darkMode: document.documentElement.classList.contains('dark'),
+                    init() {
+                        window.addEventListener('theme-changed', (e) => {
+                            this.darkMode = e.detail;
+                        });
+                    }
+                }" class="flex items-center">
+                    <button @click="window.toggleDarkMode()" type="button" class="p-2 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 focus:outline-none transition-colors" title="Toggle Light / Dark Mode">
+                        <svg x-show="darkMode" class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display: none;">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                        <svg x-show="!darkMode" class="w-5 h-5 text-slate-600 dark:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                        </svg>
+                    </button>
+                </div>
+
                 <!-- Settings Dropdown -->
-                <div class="ms-3 relative">
+                <div class="ms-1 relative">
                     <x-dropdown align="right" width="48">
                         <x-slot name="trigger">
                             <span class="inline-flex rounded-md">
@@ -138,6 +157,29 @@
             </div>
 
             <div class="mt-3 space-y-1">
+                <!-- Mobile Theme Toggle -->
+                <div x-data="{
+                    darkMode: document.documentElement.classList.contains('dark'),
+                    init() {
+                        window.addEventListener('theme-changed', (e) => {
+                            this.darkMode = e.detail;
+                        });
+                    }
+                }" class="px-4 py-2">
+                    <button @click="window.toggleDarkMode()" type="button" class="w-full flex items-center justify-between text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white transition">
+                        <span class="flex items-center">
+                            <svg x-show="darkMode" class="w-5 h-5 me-2 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display: none;">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                            </svg>
+                            <svg x-show="!darkMode" class="w-5 h-5 me-2 text-slate-600 dark:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                            </svg>
+                            <span x-text="darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'"></span>
+                        </span>
+                        <span class="text-xs px-2 py-0.5 rounded font-mono bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 uppercase" x-text="darkMode ? 'Dark' : 'Light'"></span>
+                    </button>
+                </div>
+
                 <x-responsive-nav-link href="{{ route('profile.show') }}">
                     {{ __('Profile') }}
                 </x-responsive-nav-link>
