@@ -141,17 +141,15 @@ class ProductsList extends Component
         $cloudinaryPublicId = null;
 
         if ($this->image) {
-            // Try Cloudinary API upload first
+            // Save to XAMPP MySQL database BLOB storage
+            $imageData = base64_encode(file_get_contents($this->image->getRealPath()));
+            $imageMime = $this->image->getMimeType();
+
+            // Save to Cloudinary CDN
             $cloudResult = $cloudinaryService->upload($this->image, 'products');
             if ($cloudResult) {
                 $cloudinaryUrl = $cloudResult['secure_url'];
                 $cloudinaryPublicId = $cloudResult['public_id'];
-                $imageData = null;
-                $imageMime = null;
-            } else {
-                // Fallback to local DB BLOB storage if Cloudinary fails
-                $imageData = base64_encode(file_get_contents($this->image->getRealPath()));
-                $imageMime = $this->image->getMimeType();
             }
         }
 
@@ -180,7 +178,7 @@ class ProductsList extends Component
             }
 
             $product->update($updateData);
-            session()->flash('message', 'Product updated successfully with Cloudinary image integration.');
+            session()->flash('message', 'Product updated successfully.');
         } else {
             Product::create([
                 'name' => $validated['name'],
@@ -195,7 +193,7 @@ class ProductsList extends Component
                 'cloudinary_url' => $cloudinaryUrl,
                 'cloudinary_public_id' => $cloudinaryPublicId,
             ]);
-            session()->flash('message', 'Product created successfully with Cloudinary image integration.');
+            session()->flash('message', 'Product created successfully.');
         }
 
         $this->showModal = false;
