@@ -14,6 +14,7 @@ class SanctumApiTest extends TestCase
 
     protected User $staffUser;
     protected User $ownerUser;
+    protected Category $category;
     protected Product $product;
 
     protected function setUp(): void
@@ -30,9 +31,9 @@ class SanctumApiTest extends TestCase
             'is_active' => true,
         ]);
 
-        $category = Category::create(['name' => 'Tech']);
+        $this->category = Category::create(['name' => 'Tech']);
         $this->product = Product::create([
-            'category_id' => $category->id,
+            'category_id' => $this->category->id,
             'name' => 'Wireless Mouse',
             'sku' => 'MOUSE-01',
             'selling_price' => 2500.00,
@@ -86,5 +87,38 @@ class SanctumApiTest extends TestCase
 
         $response->assertStatus(201);
         $this->assertEquals(30, $this->product->fresh()->quantity);
+    }
+
+    public function test_staff_cannot_create_product_via_api(): void
+    {
+        $token = $this->staffUser->createToken('test-token')->plainTextToken;
+
+        $response = $this->withToken($token)->postJson('/api/products', [
+            'category_id' => $this->category->id,
+            'name' => 'Unauthorized Keyboard',
+            'sku' => 'KEYBOARD-01',
+            'selling_price' => 5000.00,
+            'quantity' => 10,
+            'low_stock_threshold' => 3,
+        ]);
+
+        $response->assertStatus(403);
+    }
+
+    public function test_owner_can_create_product_via_api(): void
+    {
+        $token = $this->ownerUser->createToken('owner-token')->plainTextToken;
+
+        $response = $this->withToken($token)->postJson('/api/products', [
+            'category_id' => $this->category->id,
+            'name' => 'Mechanical Keyboard',
+            'sku' => 'MECH-01',
+            'selling_price' => 15000.00,
+            'quantity' => 10,
+            'low_stock_threshold' => 3,
+        ]);
+
+        $response->assertStatus(201)
+                 ->assertJsonPath('data.sku', 'MECH-01');
     }
 }
