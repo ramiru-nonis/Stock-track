@@ -15,6 +15,10 @@ class UpdatePasswordTest extends TestCase
 
     public function test_password_can_be_updated(): void
     {
+        if (! \Laravel\Fortify\Features::enabled(\Laravel\Fortify\Features::updatePasswords())) {
+            $this->markTestSkipped('Update password support is not enabled.');
+        }
+
         $this->actingAs($user = User::factory()->create());
 
         Livewire::test(UpdatePasswordForm::class)
@@ -30,6 +34,10 @@ class UpdatePasswordTest extends TestCase
 
     public function test_current_password_must_be_correct(): void
     {
+        if (! \Laravel\Fortify\Features::enabled(\Laravel\Fortify\Features::updatePasswords())) {
+            $this->markTestSkipped('Update password support is not enabled.');
+        }
+
         $this->actingAs($user = User::factory()->create());
 
         Livewire::test(UpdatePasswordForm::class)
@@ -46,6 +54,10 @@ class UpdatePasswordTest extends TestCase
 
     public function test_new_passwords_must_match(): void
     {
+        if (! \Laravel\Fortify\Features::enabled(\Laravel\Fortify\Features::updatePasswords())) {
+            $this->markTestSkipped('Update password support is not enabled.');
+        }
+
         $this->actingAs($user = User::factory()->create());
 
         Livewire::test(UpdatePasswordForm::class)
