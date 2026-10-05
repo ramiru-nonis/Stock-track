@@ -8,6 +8,7 @@ use App\Services\CloudinaryService;
 use App\Services\ExchangeRateService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
@@ -31,6 +32,7 @@ class ProductsList extends Component
     public string $selling_price = '';
     public string $initial_quantity = '0';
     public string $low_stock_threshold = '5';
+    /** @var \Illuminate\Http\UploadedFile|mixed */
     public $image = null; // TemporaryUploadedFile
     public ?string $existingImageUrl = null;
 
@@ -227,6 +229,7 @@ class ProductsList extends Component
         $this->deletingProductId = null;
     }
 
+    #[Layout('layouts.app')]
     public function render(ExchangeRateService $exchangeRateService): View
     {
         $query = Product::with('category')->latest();
@@ -247,6 +250,6 @@ class ProductsList extends Component
             'products' => $products,
             'categories' => $categories,
             'usdRate' => $usdRate,
-        ])->layout('layouts.app');
+        ]);
     }
 }
