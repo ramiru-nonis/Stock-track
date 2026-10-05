@@ -6,6 +6,8 @@ use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Hash;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -14,7 +16,9 @@ class StaffManagement extends Component
     use WithPagination;
     use AuthorizesRequests;
 
+    #[Url]
     public string $search = '';
+
     public bool $showModal = false;
     public string $name = '';
     public string $email = '';
@@ -31,6 +35,11 @@ class StaffManagement extends Component
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8|confirmed',
         ];
+    }
+
+    public function updatingSearch(): void
+    {
+        $this->resetPage();
     }
 
     public function openCreateModal(): void
@@ -57,6 +66,8 @@ class StaffManagement extends Component
         ]);
 
         session()->flash('message', 'Staff account created successfully.');
+        $this->reset(['name', 'email', 'password', 'password_confirmation']);
+        $this->resetValidation();
         $this->showModal = false;
     }
 
@@ -97,6 +108,13 @@ class StaffManagement extends Component
             $user = User::findOrFail($this->deactivatingUserId);
             $this->authorize('delete', $user);
 
+            if ($user->isOwner()) {
+                session()->flash('error', 'Cannot deactivate an owner account.');
+                $this->showDeactivateModal = false;
+                $this->deactivatingUserId = null;
+                return;
+            }
+
             // Soft delete user to preserve foreign key & historical integrity of stock movements
             $user->is_active = false;
             $user->save();
@@ -109,6 +127,7 @@ class StaffManagement extends Component
         $this->deactivatingUserId = null;
     }
 
+    #[Layout('layouts.app')]
     public function render(): View
     {
         $this->authorize('viewAny', User::class);
@@ -126,6 +145,6 @@ class StaffManagement extends Component
 
         return view('livewire.staff-management', [
             'staffMembers' => $query->paginate(10),
-        ])->layout('layouts.app');
+        ]);
     }
 }

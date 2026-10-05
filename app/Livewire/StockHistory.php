@@ -7,6 +7,8 @@ use App\Models\StockMovement;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -15,11 +17,22 @@ class StockHistory extends Component
     use WithPagination;
     use AuthorizesRequests;
 
+    #[Url]
     public string $productId = '';
+
+    #[Url]
     public string $userId = '';
+
+    #[Url]
     public string $type = '';
+
+    #[Url]
     public string $reason = '';
+
+    #[Url]
     public string $fromDate = '';
+
+    #[Url]
     public string $toDate = '';
 
     public function updatingProductId(): void { $this->resetPage(); }
@@ -35,6 +48,7 @@ class StockHistory extends Component
         $this->resetPage();
     }
 
+    #[Layout('layouts.app')]
     public function render(): View
     {
         $this->authorize('viewHistory', StockMovement::class);
@@ -66,6 +80,6 @@ class StockHistory extends Component
             'movements' => $query->paginate(15),
             'products' => Product::withTrashed()->orderBy('name')->get(),
             'users' => User::withTrashed()->orderBy('name')->get(),
-        ])->layout('layouts.app');
+        ]);
     }
 }

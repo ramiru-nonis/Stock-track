@@ -3,13 +3,20 @@
 namespace App\Livewire;
 
 use App\Models\Product;
+use App\Models\StockMovement;
 use App\Services\StockService;
 use Illuminate\Contracts\View\View;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Url;
 use Livewire\Component;
 
 class StockIn extends Component
 {
+    use AuthorizesRequests;
+
+    #[Url]
     public ?int $product_id = null;
     public int $quantity = 1;
     public string $reason = 'restock';
@@ -22,15 +29,25 @@ class StockIn extends Component
         'note' => 'nullable|string|max:1000',
     ];
 
+    public function mount(?int $product_id = null): void
+    {
+        if ($product_id) {
+            $this->product_id = $product_id;
+        }
+    }
+
     public function recordStockIn(StockService $stockService): void
     {
+        $this->authorize('create', StockMovement::class);
         $this->validate();
 
         try {
             $product = Product::findOrFail($this->product_id);
+            /** @var \App\Models\User $user */
+            $user = Auth::user();
             $stockService->stockIn(
                 $product,
-                Auth::user(),
+                $user,
                 $this->quantity,
                 $this->reason,
                 $this->note ?: null
@@ -45,14 +62,17 @@ class StockIn extends Component
         }
     }
 
+    #[Layout('layouts.app')]
     public function render(): View
     {
+        $this->authorize('viewAny', StockMovement::class);
+
         $selectedProduct = $this->product_id ? Product::find($this->product_id) : null;
         $products = Product::with('category')->orderBy('name')->get();
 
         return view('livewire.stock-in', [
             'products' => $products,
             'selectedProduct' => $selectedProduct,
-        ])->layout('layouts.app');
+        ]);
     }
 }
